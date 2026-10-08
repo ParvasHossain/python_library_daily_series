@@ -1,15 +1,22 @@
 import polars as pl
 
-# Create a LazyFrame query pipeline
+# 1. Create a LazyFrame query pipeline pointing to your dataset
 lazy_query = (
-    pl.scan_csv("data.csv")  # Does not load file immediately
-    .filter(pl.col("age") > 25)  # Predicate Pushdown
-    .select(["name", "age"])      # Projection Pushdown
+    pl.scan_csv("patient_churn_dataset.csv")  # Tracks data stream without immediate loading
+    .filter(
+        (pl.col("Age") > 30) &                # Capitalized 'Age' to match your schema
+        (pl.col("Churn") == 1)                # Capitalized 'Churn' to match your schema
+    )
+    .select(["Patient_ID", "Age", "Churn"])   # Case-sensitive projection selection
 )
 
-# Inspect optimized query plan before execution
+# 2. Inspect the optimized query plan before execution
 print("Optimized Logical Plan:")
 print(lazy_query.explain())
 
-# Execute query in Rust engine across CPU threads
-# df = lazy_query.collect()
+# 3. Execute the query in the Rust engine across your CPU threads
+df = lazy_query.collect()
+
+# Preview the results
+print("\nProcessed Data Preview:")
+print(df.head())
