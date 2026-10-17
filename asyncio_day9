@@ -1,0 +1,20 @@
+import asyncio
+
+async def fetch_data(service_id: int):
+    print(f"Start fetch {service_id}")
+    # Yields control back to the Event Loop during simulated network I/O
+    await asyncio.sleep(1) 
+    print(f"Completed fetch {service_id}")
+    return f"Data_{service_id}"
+
+async def main():
+    # Schedules multiple coroutines concurrently onto the Event Loop
+    results = await asyncio.gather(
+        fetch_data(1),
+        fetch_data(2),
+        fetch_data(3)
+    )
+    print("All responses:", results)
+
+# Starts event loop and executes cooperative tasks
+asyncio.run(main())
